@@ -1,25 +1,30 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import { Container } from 'reactstrap';
+import Search from './components/Search';
+import RepoList from './components/RepoList';
+import axios from 'axios';
 
 function App() {
+//https://api.github.com/search/repositories?q=language:javascript+sort:stars
+
+const [repos, setRepos] = useState([])
+
+useEffect(() => {
+  axios.get(`https://api.github.com/search/repositories?q=stars:>100000`)
+        .then(res=>{
+            console.log(res.data.items);
+            setRepos(res.data.items)
+        })
+        .catch(err=>{
+            console.log(err);
+        })   
+}, [])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <Search />
+      <RepoList repos = {repos} />
+    </Container>
   );
 }
 

@@ -14,7 +14,7 @@ useEffect(() => {
   axios.get(`https://api.github.com/search/repositories?q=stars:>100000`)
         .then(res=>{
             console.log(res.data.items);
-            setRepos(res.data.items)
+            setRepos(res.data.items);
         })
         .catch(err=>{
             console.log(err);

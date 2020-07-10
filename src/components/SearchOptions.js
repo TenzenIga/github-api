@@ -5,8 +5,7 @@ import DatePicker from "react-datepicker";
 import PropTypes from 'prop-types';
 
 export default function SearchOptions(props) {
-    const { setStars, handleSelect, handlePrefix, starsPrefix, language, stars, startDate, setStartDate } = props;
-
+    const { setStars, handleLangSelect, handlePrefix, starsPrefix, language, stars, startDate, setStartDate } = props;
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [starsDropdownOpen, setStarsDropdownOpen] = useState(false);
@@ -17,6 +16,7 @@ export default function SearchOptions(props) {
 
     return (
         <div className="options-panel">
+            {/* Language dropdown */}
             <div className="options-panel__item" >
                 <span>Language</span>
                 <Dropdown  size="sm" isOpen={dropdownOpen} toggle={toggleDropdown}>
@@ -24,13 +24,15 @@ export default function SearchOptions(props) {
                     {language}
                     </DropdownToggle>
                         <DropdownMenu>
-                            <DropdownItem onClick={(e)=>handleSelect(e)} >Javascript</DropdownItem>
-                            <DropdownItem onClick={(e)=>handleSelect(e)} >Python</DropdownItem>
-                            <DropdownItem onClick={(e)=>handleSelect(e)} >Ruby</DropdownItem>
-                            <DropdownItem onClick={(e)=>handleSelect(e)} >Java</DropdownItem>
+                            <DropdownItem onClick={(e)=>handleLangSelect(e)} >Javascript</DropdownItem>
+                            <DropdownItem onClick={(e)=>handleLangSelect(e)} >Python</DropdownItem>
+                            <DropdownItem onClick={(e)=>handleLangSelect(e)} >Ruby</DropdownItem>
+                            <DropdownItem onClick={(e)=>handleLangSelect(e)} >Java</DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                 </div>
+
+                {/* Stars input */}
                 <div className="options-panel__item">
                     <InputGroup>
                         <InputGroupButtonDropdown addonType="append" isOpen={starsDropdownOpen} toggle={toggleStarsDropdown}>
@@ -46,6 +48,8 @@ export default function SearchOptions(props) {
                 </InputGroup>
                 <span>stars</span>
             </div>
+
+            {/* Datepicker input */}
             <div className="options-panel__item">
                 <span>Since</span>
                 <InputGroup>
@@ -57,9 +61,9 @@ export default function SearchOptions(props) {
 }
 
 SearchOptions.proptype = {
-    heandlePrefix: PropTypes.func,
+    handlePrefix: PropTypes.func,
     language: PropTypes.string,
-    handleSelect: PropTypes.func, 
+    handleLangSelect: PropTypes.func, 
     setStars: PropTypes.func,
     stars: PropTypes.number,
     startDate: PropTypes.string,

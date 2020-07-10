@@ -1,29 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, { useContext} from 'react';
 import './App.css';
 import { Container } from 'reactstrap';
 import Search from './components/Search';
 import RepoList from './components/RepoList';
-import axios from 'axios';
+import { Store } from './context/context';
+import Loading from './components/Loading';
+
 
 function App() {
-//https://api.github.com/search/repositories?q=language:javascript+sort:stars
 
-const [repos, setRepos] = useState([])
-
-useEffect(() => {
-  axios.get(`https://api.github.com/search/repositories?q=stars:>100000`)
-        .then(res=>{
-            console.log(res.data.items);
-            setRepos(res.data.items);
-        })
-        .catch(err=>{
-            console.log(err);
-        })   
-}, [])
+const  {state} = useContext(Store)
+const {repos, loading} = state;
   return (
     <Container>
       <Search />
-      <RepoList repos = {repos} />
+      { loading ? <Loading /> :  <RepoList repos = {repos} /> }
+      
     </Container>
   );
 }

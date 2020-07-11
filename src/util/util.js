@@ -20,7 +20,6 @@ export function searchRepos(search) {
     //   })
       .then(r => r.data.items)
       .catch(error => {
-          console.log(error);
-        return [];
+        return error;
       });
   }

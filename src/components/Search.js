@@ -7,7 +7,7 @@ import { Store } from '../context/context';
 import useDebounce from '../util/useDebounce';
 
 export default function Search() {
-    const  {dispatch} = useContext(Store)
+    const  {dispatch} = useContext(Store);
     const [searchValue, setSearchValue] = useState('');
     const [language, setLanguage ] = useState('Any');
     const [startDate, setStartDate] = useState(new Date('01/01/2010'));
@@ -26,22 +26,18 @@ export default function Search() {
             setStarsPrefix('>')
         }
     }
+    //url для запроса, когда любой параметр меняется включается debounce
     const url= useDebounce(generateUrl(searchValue, language, starsPrefix, stars, startDate), 500)
-    //const debouncedSearchTerm = useDebounce(searchValue, 500);
-
+    
     useEffect(
-      
         () => {
-          // Убедиться что у нас есть значение (пользователь ввел что-то)
        
             // Выставить состояние loading
 
             dispatch({type:'FETCH_DATA'})
-            //let url = generateUrl(debouncedSearchTerm, language, starsPrefix, stars, startDate)
             // Сделать запрос к АПИ
             searchRepos(url)
             .then(res=>{
-                console.log(res)
                 return dispatch({
                     type:'SET_DATA',
                     payload:res

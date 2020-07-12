@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import PropTypes from 'prop-types';
 
 export default function SearchOptions(props) {
-    const { setStars, handleLangSelect, handlePrefix, starsPrefix, language, stars, startDate, setStartDate } = props;
+    const { handleStarsInput, handleLangSelect, handlePrefix, starsPrefix, language, stars, startDate, handleDateSelect } = props;
 
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [starsDropdownOpen, setStarsDropdownOpen] = useState(false);
@@ -21,9 +21,10 @@ export default function SearchOptions(props) {
                 <span>Language</span>
                 <Dropdown  size="sm" isOpen={dropdownOpen} toggle={toggleDropdown}>
                     <DropdownToggle caret>
-                    {language}
+                    {language ? language : 'Any'}
                     </DropdownToggle>
                         <DropdownMenu>
+                            <DropdownItem onClick={(e)=>handleLangSelect(e)} >Any</DropdownItem>
                             <DropdownItem onClick={(e)=>handleLangSelect(e)} >Javascript</DropdownItem>
                             <DropdownItem onClick={(e)=>handleLangSelect(e)} >Python</DropdownItem>
                             <DropdownItem onClick={(e)=>handleLangSelect(e)} >Ruby</DropdownItem>
@@ -44,7 +45,7 @@ export default function SearchOptions(props) {
                             <DropdownItem onClick={(e)=>handlePrefix(e)} >Less than</DropdownItem>
                         </DropdownMenu>
                         </InputGroupButtonDropdown>
-                        <Input value={stars} onChange={(e)=>setStars(e.target.value)} />
+                        <Input value={stars} onChange={(e)=>handleStarsInput(e)} />
                 </InputGroup>
                 <span>stars</span>
             </div>
@@ -53,7 +54,7 @@ export default function SearchOptions(props) {
             <div className="options-panel__item">
                 <span>Since</span>
                 <InputGroup>
-                    <DatePicker selected={startDate} customInput={<Input />} onChange={date => setStartDate(date)} />   
+                    <DatePicker selected={startDate} customInput={<Input />} onChange={date => handleDateSelect(date)} />   
                 </InputGroup>  
             </div>
         </div>
@@ -64,9 +65,9 @@ SearchOptions.proptype = {
     handlePrefix: PropTypes.func,
     language: PropTypes.string,
     handleLangSelect: PropTypes.func, 
-    setStars: PropTypes.func,
+    handleStarsInput: PropTypes.func,
     stars: PropTypes.number,
     startDate: PropTypes.string,
-    setStartDate:PropTypes.func,
+    handleDateSelect:PropTypes.func,
     starsPrefix: PropTypes.string
 }

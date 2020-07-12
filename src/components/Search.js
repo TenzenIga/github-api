@@ -6,42 +6,70 @@ import {generateUrl, searchRepos} from '../util/util';
 import { Store } from '../context/context';
 import useDebounce from '../util/useDebounce';
 
+  
 export default function Search() {
     const  {dispatch} = useContext(Store);
     const [searchValue, setSearchValue] = useState('');
-    const [language, setLanguage ] = useState('Any');
-    const [startDate, setStartDate] = useState(new Date('01/01/2010'));
-    const [stars, setStars] = useState(10000);
+    const [language, setLanguage ] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [stars, setStars] = useState('');
     const [starsPrefix, setStarsPrefix] = useState('>');
 
+    const handleStarsInput = (e) =>{
+        const re = /^[0-9\b]+$/;
+
+         // Принимаем только числа
+        if (e.target.value === '' || re.test(e.target.value)) {
+        setStars(e.target.value)
+            }
+    }
+
+    const handleDateSelect = (date) =>{
+        setStartDate(date);
+        const url = generateUrl(searchValue, language, starsPrefix, stars, date);
+        handleApiCall(url);
+    }
 
     const handleLangSelect = (e)=>{
-        setLanguage(e.target.innerText)
+        const selectedLang = e.target.innerText;
+        if(selectedLang === 'Any'){
+            setLanguage('');
+        }else{
+            setLanguage(selectedLang)
+        }
+        
+        const url = generateUrl(searchValue, selectedLang, starsPrefix, stars, startDate);
+        handleApiCall(url);
     }
 
     const handlePrefix = (e) =>{
-        if(e.target.innerText === 'Less than'){
-            setStarsPrefix('<')
-        }else{
-            setStarsPrefix('>')
+        // если количество звездочек не указано, не запускаем функцию
+        if(stars === ''){
+            return;
         }
+        let selectedPrefix = '';
+        if(e.target.innerText === 'Less than'){
+            selectedPrefix = '<';
+            setStarsPrefix(selectedPrefix);
+        }else{
+            selectedPrefix = '>'
+            setStarsPrefix(selectedPrefix);
+        }
+        const url = generateUrl(searchValue, language, selectedPrefix, stars, startDate);
+        handleApiCall(url);
     }
-    //url для запроса, когда любой параметр меняется включается debounce
-    const url= useDebounce(generateUrl(searchValue, language, starsPrefix, stars, startDate), 500)
-    
-    useEffect(
-        () => {
-       
-            // Выставить состояние loading
 
-            dispatch({type:'FETCH_DATA'})
-            // Сделать запрос к АПИ
+    const handleApiCall = (url) =>{
+        //имя репозитория обязательно
+        if(searchValue){ 
+            dispatch({type:'FETCH_DATA'}) // статус loading 
+            
             searchRepos(url)
-            .then(res=>{
-                return dispatch({
+            .then(res=>{ // Сделать запрос к АПИ
+                dispatch({
                     type:'SET_DATA',
                     payload:res
-                  })
+                })
             })
             .catch(err=>{
                 dispatch({
@@ -49,10 +77,36 @@ export default function Search() {
                     payload:err
                 })
             })
+            }else{ //если главный инпут пустой, возвращаем пустой масив
+                dispatch({
+                    type:'SET_DATA',
+                    payload:[]
+                })
+            }
+    }
+    
+    const debouncedValue= useDebounce(searchValue, 500);
+    const debounceStars = useDebounce(stars, 500);
+    // использую debounce и useEffect для инпута с колчеством звездочек и поисковой строки т.к их можно тригерить очень быстро. 
+    useEffect(
+        () => {
+            let url = '';
+            if(debounceStars){
+                url = generateUrl(searchValue, language, starsPrefix, debounceStars, startDate);
+                handleApiCall(url)
+            }else if (debouncedValue) {
+                url = generateUrl(debouncedValue, language, starsPrefix, stars, startDate)
+                handleApiCall(url)
+            }else{
+                dispatch({
+                    type:'SET_DATA',
+                    payload:[]
+                  })
+            } 
         },
         // Это массив зависимостей useEffect
         // Хук useEffect сработает только если отложенное значение изменится ...
-        [url]
+        [debouncedValue, debounceStars]
       );
 
     return (
@@ -66,10 +120,10 @@ export default function Search() {
                 handlePrefix={handlePrefix}
                 language={language} 
                 handleLangSelect={handleLangSelect} 
-                setStars={setStars} 
+                handleStarsInput={handleStarsInput} 
                 stars={stars} 
                 startDate={startDate}
-                setStartDate={setStartDate}
+                handleDateSelect={handleDateSelect}
                 starsPrefix={starsPrefix} 
             />
         </Form>
